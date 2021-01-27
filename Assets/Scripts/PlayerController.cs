@@ -4,14 +4,26 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    public static PlayerController instance;
+
     public Rigidbody2D playerBody;
-    public Transform fpsCamera;
+    public Camera fpsCamera;
+    public Animator gunAnimator;
 
     public float moveSpeed = 5.0f;
     public float mouseSensitivity = 1.0f;
 
+    public int currentAmmo;
+
+    public GameObject bulletImpact;
+
     private Vector2 moveInput;
     private Vector2 mouseInput;
+
+    private void Awake()
+    {
+        instance = this;
+    }
 
     // Update Run every frame
     private void Update()
@@ -29,9 +41,28 @@ public class PlayerController : MonoBehaviour
 
         transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles - new Vector3(0f, 0f, mouseInput.x));
 
-        fpsCamera.localRotation = Quaternion.Euler(fpsCamera.localRotation.eulerAngles + new Vector3(0f, mouseInput.y, 0f));
+        fpsCamera.transform.localRotation = Quaternion.Euler(fpsCamera.transform.localRotation.eulerAngles + new Vector3(0f, mouseInput.y, 0f));
 
         // Shooting
+        if(Input.GetMouseButtonDown(0))
+        {
+            if(currentAmmo > 0)
+            {
+                Ray ray = fpsCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0.0f));
+                RaycastHit hit;
+                if (Physics.Raycast(ray, out hit))
+                {
+                    //Debug.Log($"I am Looking at {hit.transform.name}");
+                    Instantiate(bulletImpact, hit.point, transform.rotation);
+                }
+                else
+                {
+                    Debug.Log("I am Looking at nothing");
+                }
+                currentAmmo--;
+                gunAnimator.SetTrigger("Shoot");
+            }
+        }
     }
 
 }
