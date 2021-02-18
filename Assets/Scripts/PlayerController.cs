@@ -14,19 +14,38 @@ public class PlayerController : MonoBehaviour
     public float mouseSensitivity = 1.0f;
 
     public int currentAmmo;
+    public int maxHealth = 100;
 
     public GameObject bulletImpact;
+    public GameObject deadScreen;
 
     private Vector2 moveInput;
     private Vector2 mouseInput;
+
+    private int currentHealth;
+
+    private bool hasDead;
 
     private void Awake()
     {
         instance = this;
     }
 
+    private void Start()
+    {
+        currentHealth = maxHealth;
+    }
+
     // Update Run every frame
     private void Update()
+    {
+        if(!hasDead)
+        {
+            MoveShootLook();
+        }
+    }
+
+    private void MoveShootLook()
     {
         // Movement
         moveInput = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
@@ -44,9 +63,9 @@ public class PlayerController : MonoBehaviour
         fpsCamera.transform.localRotation = Quaternion.Euler(fpsCamera.transform.localRotation.eulerAngles + new Vector3(0f, mouseInput.y, 0f));
 
         // Shooting
-        if(Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0))
         {
-            if(currentAmmo > 0)
+            if (currentAmmo > 0)
             {
                 Ray ray = fpsCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0.0f));
                 RaycastHit hit;
@@ -57,7 +76,7 @@ public class PlayerController : MonoBehaviour
 
                     if (hit.transform.CompareTag("Enemy"))
                     {
-                        hit.transform.parent.GetComponent<EnemyController>().TakeDamage(); 
+                        hit.transform.parent.GetComponent<EnemyController>().TakeDamage();
                     }
                 }
                 else
@@ -67,6 +86,26 @@ public class PlayerController : MonoBehaviour
                 currentAmmo--;
                 gunAnimator.SetTrigger("Shoot");
             }
+        }
+    }
+
+    public void TakeDamage(int damage)
+    {
+        currentHealth -= damage;
+        
+        if(currentHealth <= 0)
+        {
+            deadScreen.SetActive(true);
+            hasDead = true;
+        }
+    }
+
+    public void AddHealth(int amount)
+    {
+        currentHealth += amount;
+        if(currentHealth > maxHealth)
+        {
+            currentHealth = maxHealth;
         }
     }
 

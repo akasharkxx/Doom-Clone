@@ -9,6 +9,14 @@ public class EnemyController : MonoBehaviour
 
     public int health = 3;
     public GameObject explosion;
+    public GameObject bulletPrefab;
+
+    public bool shouldShoot;
+    public float fireRate = .5f;
+
+    public Transform firePoint;
+
+    private float shotCounter;
 
     private Rigidbody2D rBody;
 
@@ -24,6 +32,16 @@ public class EnemyController : MonoBehaviour
             Vector3 playerDirection = PlayerController.instance.transform.position - transform.position;
 
             rBody.velocity = playerDirection.normalized * moveSpeed;
+            
+            if(shouldShoot)
+            {
+                shotCounter -= Time.deltaTime;
+                if(shotCounter <= 0)
+                {
+                    Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
+                    shotCounter = fireRate;
+                }
+            }
         }
         else
         {
