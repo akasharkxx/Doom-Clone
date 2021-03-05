@@ -11,8 +11,8 @@ public class AmmoPickup : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             PlayerController.instance.currentAmmo += ammoInThisPickup;
+            PlayerController.instance.UpdateAmmoUI();
             Destroy(this.gameObject);
         }
-
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class PlayerController : MonoBehaviour
 {
@@ -8,6 +9,8 @@ public class PlayerController : MonoBehaviour
 
     public Rigidbody2D playerBody;
     public Camera fpsCamera;
+
+    public Animator playerAnim;
     public Animator gunAnimator;
 
     public float moveSpeed = 5.0f;
@@ -18,6 +21,10 @@ public class PlayerController : MonoBehaviour
 
     public GameObject bulletImpact;
     public GameObject deadScreen;
+
+    //UI
+    public TextMeshProUGUI healthText;
+    public TextMeshProUGUI ammoText;
 
     private Vector2 moveInput;
     private Vector2 mouseInput;
@@ -34,6 +41,8 @@ public class PlayerController : MonoBehaviour
     private void Start()
     {
         currentHealth = maxHealth;
+        healthText.text = currentHealth.ToString() + "%";
+        ammoText.text = currentAmmo.ToString();
     }
 
     // Update Run every frame
@@ -85,7 +94,17 @@ public class PlayerController : MonoBehaviour
                 }
                 currentAmmo--;
                 gunAnimator.SetTrigger("Shoot");
+                UpdateAmmoUI();
             }
+        }
+
+        if(moveInput != Vector2.zero)
+        {
+            playerAnim.SetBool("IsMoving", true);
+        }
+        else
+        {
+            playerAnim.SetBool("IsMoving", false);
         }
     }
 
@@ -97,7 +116,9 @@ public class PlayerController : MonoBehaviour
         {
             deadScreen.SetActive(true);
             hasDead = true;
+            currentHealth = 0;
         }
+        healthText.text = currentHealth.ToString() + "%";
     }
 
     public void AddHealth(int amount)
@@ -107,6 +128,12 @@ public class PlayerController : MonoBehaviour
         {
             currentHealth = maxHealth;
         }
+        healthText.text = currentHealth.ToString() + "%";
+    }
+
+    public void UpdateAmmoUI()
+    {
+        ammoText.text = currentAmmo.ToString();
     }
 
 }

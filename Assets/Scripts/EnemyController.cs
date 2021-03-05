@@ -38,8 +38,9 @@ public class EnemyController : MonoBehaviour
                 shotCounter -= Time.deltaTime;
                 if(shotCounter <= 0)
                 {
-                    Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
+                    GameObject enemyBullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
                     shotCounter = fireRate;
+                    Destroy(enemyBullet, 4f);
                 }
             }
         }
